@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+    <title>A Simple Neural Network Gradient Calculation Example </title>
+    <script>
+        window.MathJax = {
+          loader: {load: ['[tex]/cases']},
+          tex: {
+            inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+            packages: {'[+]': ['cases']},
+            tags: 'ams'
+          }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        h1 {
+            font-size: 32px;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #0078d7;
+            color: #fff;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.75em;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <header>
+            <h1>A Simple Neural Network Gradient Calculation Example </h1>
+            <p><time>11/10/2023</time></p>
+            <div class="tags">
+                
+                    <span class="tag">machine-learning</span>
+                
+                    <span class="tag"> gradients</span>
+                
+            </div>
+        </header>
+        <section>
+            <h2>The Gradient of a Real-Valued Function of a Matrix</h2>
+<p>A typical treatment of multivariable calculus defines the gradient of a map $f:\mathbb{R}^n \to \mathbb{R}$ at a point $a$ as the vector of partial derivatives of $f$ at $a$:</p>
+<p>$$
+\nabla f(a) 
+= 
+\begin{pmatrix}
+\frac{\partial f}{\partial x_1} (a) \\
+\vdots \\
+\frac{\partial f}{\partial x_n} (a) \\
+\end{pmatrix}.
+$$</p>
+<p>The gradient is useful because it gives the direction of steepest increase for a local, linear approximation to $f$. </p>
+<p>How do we define the gradient of $f$ if its input is a $m \times n$ matrix $A$? Our intuition might be to think of the matrix $A$ as a long vector; compute the partial derivatives of $f$ with respect to each entry in $A$, and organize the partial derivatives into a matrix of the same shape.</p>
+<p>This intuition is correct, but let's see how we can prove this formally. We'll start by discussing how gradients are defined in arbitrary inner product spaces. </p>
+<h3>Gradients in general</h3>
+<p>Suppose that $f$ is a mapping from an inner product space $V$ to $\mathbb{R}$. We'll denote the inner product on $V$ by $\langle \cdot, \cdot {\rangle}_V$. Recall that the derivative of $f$ at a point $v$ (if it exists) is a linear map from $V$ to $\mathbb{R}$, which we'll denote by $D f(v)$, which gives the best linear approximation to the change in $f$ near $v$:</p>
+<p>$$f(v + h) - f(v) = D f(v) h + o(h)$$</p>
+<p>as $h \to 0$. </p>
+<p>The derivative approximates the change to $f$ as we move away from $v$ in some direction $h$. 
+How can we use this information to identify the direction $h$ in which $f$ increases <em>the fastest</em>? 
+That is, for which $h$ is $D f(v) h$ as large as possible? </p>
+<p>To do this, we'll need to relate $D f (v)$ to the inner product $\langle \cdot, \cdot {\rangle}_V$. 
+The Riesz Representation Theorem provides this connection. 
+It implies that there exists a vector $g \in V$ for which 
+$$
+\begin{equation}
+D f (v) h = \langle h, g {\rangle}_V
+\label{ipgrad}
+\end{equation}
+$$
+for all $h$.
+This means that we can find the directional derivative of $f$ in the direction of $h$ by just taking an inner product with $g$, and we can now focus on finding an $h$ which maximizes $\langle h, g {\rangle}_V$.</p>
+<p>How do we choose $h$ to make $\langle h, g {\rangle}_V$ as large as possible? Recall the Cauchy-Schwarz inequality, which gives an upper bound on the inner product between two vectors:
+$$ |\langle h, g {\rangle}_V| \leq ||h||_V\ \cdot ||g||_V $$
+and says that the inner product is maximized when the vectors point in the same direction. 
+In other words, the direction $h$ which increases $f$ the fastest is a (positive) scalar multiple of $g$.
+Indeed, $g$ is the gradient of $f$ at $v$, and equation (\ref{ipgrad}) is how we define the gradient for real-valued functions on arbitrary inner product spaces.</p>
+<h3>Gradients of matrix functions</h3>
+<p>Let's now return to the case of a real-valued function $f$ of a matrix $X$. Suppose that $f$ is a real-valued function on the vector space of $m \times n$ matrices, $\text{Mat}(m, n)$. 
+The standard inner product on this vector space is given by 
+$$
+\langle A, B {\rangle}_M := \text{Tr}(AB^T)
+$$
+for $A, B \in \text{Mat}(m, n)$. 
+By our discussion above, the gradient of $f$ at $X$ is the matrix $\nabla f (X)$ which satisfies the identity (\ref{ipgrad}) for all matrices $h$:
+$$
+D f (X) h = \langle h, \nabla f (X) {\rangle}_M.
+$$ </p>
+<p>Let's show that $\nabla f (X)$ is the matrix of partial derivatives of $f$ with respect to each entry in $X$. </p>
+<p>Formally, we can consider the flattening map $\Phi:\text{Mat}(m, n) \to \mathbb{R}^{mn}$, which flattens an $m \times n$ matrix into a vector in row-major order. The map $\Phi$ is called an <em>isometry</em>, because it preserves inner products:</p>
+<p>$$
+\langle A, B {\rangle}_M = AB^T = \Phi(A)^T \Phi(B) = \langle \Phi(A), \Phi(B) \rangle.
+$$</p>
+<p>This says that the inner product of two matrices $A$ and $B$ in $\text{Mat}(m, n)$ is equal to the dot product of the flattened matrices $\Phi(A)$ and $\Phi(B)$. This is easy to see once you realize that $AB^T$ is just the sum of the products of the corresponding entries of $A$ and $B$. </p>
+<p>Let's denote by $\tilde f$ the composition $f \circ \Phi^{-1}$, which we can think of as the "flattened version" of $f$, which takes a vector in $\mathbb{R}^{mn}$, un-flattens it into a matrix, and applies $f$. </p>
+<p>We want to show that the following statement is true:
+$$
+\begin{equation}
+\nabla f(X) = \Phi^{-1}(\nabla \tilde f (x)).
+\label{flattening-identity}
+\end{equation}
+$$
+This statement says that to find the gradient of $f$ at some matrix $X$, we can first flatten $X$ (to $x$), then calculate the gradient of the "flattened version" $\tilde f$ at $x$, and then reshape the result back into a matrix.</p>
+<p>We'll start with the derivative of $\tilde f$. 
+By the Chain Rule, we have that
+$$
+\begin{align}
+\nonumber
+D \tilde f (x) &amp;= D f \circ \Phi^{-1} (x) \\
+\nonumber
+&amp;= Df(\Phi^{-1}(x)) \circ D \Phi^{-1} (x) \\
+\nonumber
+&amp;= Df(\Phi^{-1}(x)) \circ \Phi^{-1}
+\end{align}
+$$
+where the Chain Rule was used to go from the first line to the second, and the third line follows from linearity of $\Phi^{-1}$.</p>
+<p>By definition of the gradient, $\nabla \tilde f(x)$ satisfies the identity
+$$
+D \tilde f(x) = \langle h, \nabla \tilde f(x) \rangle 
+$$
+for all vectors $h$. We will use this identity to relate the gradient of $\tilde f$ and the gradient of $f$:
+$$
+\begin{align}
+\nonumber
+D \tilde f(x)h &amp;= D f (\Phi^{-1}(x)) \circ \Phi^{-1} h &amp;&amp;\ \text{by what we showed above} \\
+\nonumber
+&amp;= D f (X) \circ \Phi^{-1} h \\
+\nonumber
+&amp;= D f (X) \Phi^{-1}(h) \\ 
+\nonumber
+&amp;= \langle \Phi^{-1}(h), \nabla f(X) {\rangle}_M &amp;&amp;\ \text{by definition of the gradient} \\ 
+\nonumber
+&amp;= \langle h, \Phi(\nabla f(X)) \rangle &amp;&amp;\ \text{since $\Phi$ is an isometry}. \\ 
+\end{align}
+$$
+In summary, we've shown that 
+$$
+D \tilde f(x)h = \langle h, \Phi(\nabla f(X)) \rangle
+$$
+for all vectors $h$, which means that $\Phi(\nabla f(X))$ must equal the gradient $\nabla \tilde f(x)$ since the gradient is unique. Note that to prove this, we only needed that $\Phi$ is linear and an isometry, and indeed this result holds for all such functions. </p>
+<p>Applying $\Phi^{-1}$ to both sides gives us the identity (\ref{flattening-identity}) we were after:
+$$
+\nabla f(X) = \Phi^{-1}(\nabla \tilde f (x))
+$$</p>
+<p>This flattening procedure is fairly self-evident, and the amount of insight gained from a proof is questionable, but at least now we can proceed with the confidence that our procedure is mathematically sound. </p>
+<h2>The Gradient of a Composition Composes in Reverse</h2>
+<p>The Chain Rule says that the derivative of a composition is the composition of the derivatives:
+$$D f \circ g (x) = Df(g(x)) \circ Dg(x)$$
+but what about the <em>gradient</em> of a composition?</p>
+<p>Suppose that $g:\mathbb{R}^n \to \mathbb{R}^m$ and $f:\mathbb{R}^m \to \mathbb{R}$. In this case, we know that the gradient is the transpose of the Jacobian matrix, and so
+$$
+\begin{align}
+\nonumber
+\nabla f \circ g (x) &amp;= J_{f \circ g}(x)^{T} \\ 
+\nonumber
+&amp;= (J_{f}(g(x)) \cdot J_{g}(x))^T \\
+\nonumber
+&amp;= J_{g}(x)^T \cdot J_{f}(g(x))^T \\
+\nonumber
+&amp;= J_{g}(x)^T \cdot \nabla f(g(x)).
+\end{align}
+$$</p>
+<p>The gradient of a composition is the product of the (transposed) Jacobians in <em>reverse</em> order, hence the mnemonic: <em>the gradient of a composition composes in reverse</em>.</p>
+<p>In the next section, we'll see how the two ideas above help us compute gradients of linear layers, which are ubiquitious in deep learning. </p>
+<h2>The Linear Layer</h2>
+<p>A linear layer takes a $d$-dimensional input and applies the transformation $x \mapsto Wx + b$, where $W \in \text{Mat}(h, d)$ are the weights and $b \in \mathbb{R}^h$ is the bias.
+If we view its output as a function of the parameter $W$, then the output is a vector-valued function of a matrix, which we'll denote by $f:\text{Mat}(h, d) \to \mathbb{R}^h$. </p>
+<p>How do we compute the derivative of $f$? Recall that the derivative of $f$ is the best linear approximation to the difference $f(W + H) - f(W)$. Since
+$$
+f(W + H) - f(W) = (W + H)x - Wx = Hx
+$$
+which is linear in $H$, the derivative is just the map $H \mapsto Hx$. </p>
+<p>This is a symbolic expression for the derivative, but to explicitly calculate the partial derivatives of the loss with respect to the entries in $W$, we'll have to calculate the Jacobian matrix of $f$. We will first flatten $W$ (identifying $\text{Mat}(h, d)$ with $\mathbb{R}^{hd}$), calculate the Jacobian of $f \circ \Phi^{-1}:\mathbb{R}^{hd} \to \mathbb{R^h}$, use the Jacobian to calculate the gradient of the loss with respect to (the flattened) $W$, and then reshape the gradient back into a matrix.</p>
+<p>Let's make this concrete with an example. Suppose that $W = \begin{pmatrix} a &amp; b \\ c &amp; d \\ \end{pmatrix} \in \text{Mat}(2, 2)$ and $x = \begin{pmatrix} x_1 \\ x_2 \\ \end{pmatrix} \in \mathbb{R}^2$.</p>
+<p>As discussed above, the flattening map $\Phi$ identifies $\text{Mat}(2, 2)$ with $\mathbb{R}^4$, and we can consider the "flattened version" of the linear layer $(W \mapsto Wx) \circ \Phi^{-1} : \mathbb{R}^4 \to \mathbb{R}^2$, given by
+$$
+\begin{pmatrix}
+a \\ 
+b \\ 
+c \\ 
+d \\
+\end{pmatrix} 
+\mapsto 
+\begin{pmatrix} a &amp; b \\ c &amp; d \\ \end{pmatrix} 
+\begin{pmatrix} x_1 \\ x_2 \\ \end{pmatrix}
+= 
+\begin{pmatrix} a x_1 + b x_2 \\ c x_1 + d x_2 \\ \end{pmatrix}.
+$$</p>
+<p>The bias term is omitted for simplicity and because it doesn't contribute to the gradient with respect to $W$ anyway.</p>
+<p>This is a map whose Jacobian matrix we know how to calculate: if we organize the partial derivatives into a $2 \times 4$ matrix, we get the following Jacobian matrix:</p>
+<p>$$
+J_{\tilde f}(w) = 
+\begin{pmatrix}
+ x_1 &amp; x_2 &amp;   0 &amp; 0   \\
+ 0   &amp; 0   &amp; x_1 &amp; x_2 \\
+\end{pmatrix}
+$$</p>
+<p>where $w = \Phi(W)$ is just the flattened $W$. </p>
+<p>Now, suppose that the gradient of the loss with respect to the output of the linear layer (which we'll call $z$) is $\frac{\partial l}{\partial z}$. In our example, this gradient is a vector in $\mathbb{R}^2$ (or a vector in $\mathbb{R}^h$, more generally.) 
+We first calculate the gradient of the loss with respect to $w$.
+Since the gradient of a composition composes in reverse, this becomes
+$$
+J_{\tilde f}(w)^T \cdot \frac{\partial l}{\partial z} 
+= 
+\begin{pmatrix}
+x_1 &amp; 0   \\
+x_2 &amp; 0   \\
+0   &amp; x_1 \\ 
+0   &amp; x_2 \\
+\end{pmatrix}
+\begin{pmatrix}
+\partial l / \partial z_1 \\ 
+\partial l / \partial z_2 \\
+\end{pmatrix}
+= 
+\begin{pmatrix}
+x_1 \frac{\partial l}{\partial z_1} \\ 
+x_2 \frac{\partial l}{\partial z_1} \\ 
+x_1 \frac{\partial l}{\partial z_2} \\ 
+x_2 \frac{\partial l}{\partial z_2} \\ 
+\end{pmatrix}.
+$$
+This vector is the gradient of the composition of $l(z)$ with the "flattened" linear layer $\tilde f$, which we can reshape back into a $2 \times 2$ matrix to obtain the gradient of the loss with respect to $W$:
+$$
+\frac{\partial l}{\partial W}
+=
+\begin{pmatrix}
+x_1 \frac{\partial l}{\partial z_1} &amp; x_2 \frac{\partial l}{\partial z_1} \\ 
+x_1 \frac{\partial l}{\partial z_2} &amp; x_2 \frac{\partial l}{\partial z_2} \\
+\end{pmatrix}.
+$$
+Notice something interesting about this gradient in matrix form: it can be expressed much more simply as an outer product
+$$
+\begin{pmatrix}
+x_1 \frac{\partial l}{\partial z_1} &amp; x_2 \frac{\partial l}{\partial z_1} \\ 
+x_1 \frac{\partial l}{\partial z_2} &amp; x_2 \frac{\partial l}{\partial z_2} \\
+\end{pmatrix}
+= 
+\begin{pmatrix}
+\frac{\partial l}{\partial z_1} \\ 
+\frac{\partial l}{\partial z_2} \\ 
+\end{pmatrix}
+\begin{pmatrix}
+x_1 &amp; x_2 \\
+\end{pmatrix}
+$$
+which leads us to the identity
+$$
+\begin{equation}
+\frac{\partial l}{\partial W} = \frac{\partial l}{\partial z} x^T.
+\label{lineareq}
+\end{equation}
+$$</p>
+<p>Our approach of flattening the independent variable to calculate a Jacobian will <em>always</em> work, but oftentimes we can leverage a simpler identity to get the same result with significantly less computational work, as is the case here. For example, the first linear layer in an MLP of a Transformer Block in GPT-2 has $d = 768$ and $h = 4 \cdot 768$, so the Jacobian of that layer alone will have $d \cdot h \cdot h = 4^2 \cdot (768)^3 \approx 7.24 \times 10^9$ entries! </p>
+<h2>The Element-wise Activation</h2>
+<p>Activation functions are applied element-wise.
+Let's denote by $f \circ x$ the element-wise application of $f:\mathbb{R} \to \mathbb{R}$ to the vector $x$, and denote by $f \circ$ the mapping $x \mapsto f \circ x$.</p>
+<p>How can we calculate the Jacobian matrix of $f \circ$?
+Each coordinate of the output is determined by the same coordinate of the input, so the partial derivates of $f \circ$ are given by
+$$
+\frac{\partial {f \circ}_i}{\partial x_j} = \begin{cases}
+f'(x_j) &amp; i = j, \\
+0 &amp; i \neq j.
+\end{cases}
+$$</p>
+<p>and the Jacobian is the diagonal matrix whose entries are obtained by applying $f'$ element-wise to $x$:</p>
+<p>$$
+J_{f \circ}(x)
+= 
+\begin{pmatrix}
+f'(x_1)   &amp;         &amp; \\
+          &amp; \ddots  &amp; \\
+          &amp;         &amp; f'(x_n) \\
+\end{pmatrix}
+= 
+\text{diag}(f' \circ x).
+$$</p>
+<h2>An Example</h2>
+<p>Consider a two-layer neural network with ReLU activation used for a classification task with $k$ classes, with $d$-dimensional input and hidden dimension $h$. 
+The label $y$ is an integer in $\{1, \cdots, k\}$.</p>
+<p>We can describe the forward pass symbolically as follows:</p>
+<ul>
+<li>
+<p>$z_1 = W_1 x + b_1$ (<strong>first linear layer</strong>)</p>
+<!-- where the input $x \\in \\mathbb{R}^d$, the weights $W_1 \\in \\text{Mat}(h, d)$, and the bias $b_1 \\in \\mathbb{R}^h$. This is the first linear layer.    -->
+</li>
+<li>
+<p>$a_1 = \phi \circ z_1$ (<strong>activation</strong>)</p>
+<!-- where $\\phi:\\mathbb{R} \\to \\mathbb{R}$ is the ReLU function given by $\\phi(t) = \\text{max}(0, t)$. This is the first activation. Recall that the notation $\\phi \\circ z_1$ refers to element-wise application of $\\phi$ to each entry of $z_1$. -->
+</li>
+<li>
+<p>$z_2 = W_2 a_1 + b_2$ (<strong>second linear layer</strong>)</p>
+<!-- where $W_2 \\in \\text{Mat}(k, h)$ and $b_2 \\in \\mathbb{R}^k$. -->
+</li>
+<li>
+<p>$o = \sigma(z_2)$ (<strong>softmax</strong>)</p>
+<!-- where $\\sigma:\\mathbb{R}^k \\to \\mathbb{R}^k$ refers to the softmax function. -->
+</li>
+<li>
+<p>$l = \text{cross-entropy}(o, y)$ (<strong>loss</strong>)</p>
+<!-- where the cross-entropy loss is the negative log-likelihood of the correct class ($y$). -->
+</li>
+</ul>
+<p>Before we start calculating gradients, it's helpful to visualize the functions composing the forward pass in a directed graph, commonly referred to as an execution trace. </p>
+<div style="text-align:center;">
+    <img src="static/gradients-trace.jpg" alt="Execution Trace" style="width:70%; height:auto;" />
+</div>
+
+<p>We'll code up the forward pass and gradient calculations in JAX, so we can check our work. </p>
+<p>First define some constants and initialize the parameters:</p>
+<pre><code class="language-python">k = 3  # Number of classes
+d = 3  # Input dim
+h = 5  # Hidden dim
+
+x = jnp.ones((h,)) # Input
+y = 2              # Label
+
+# Initialize the network parameters.
+key = random.PRNGKey(0) 
+k1, k2, k3, k4, k5 = random.split(key, 5)
+
+W1 = random.normal(k2, (h, d))
+B1 = random.normal(k3, (h,))
+W2 = random.normal(k4, (k, h))
+B2 = random.normal(k5, (k,))
+</code></pre>
+<p>Next, let's code up the forward pass:</p>
+<pre><code># linear layer
+z1 = W1 @ x + B1
+
+# activation
+a1 = relu(z1)
+
+# linear layer
+z2 = W2 @ a1 + B2
+
+# output
+o = softmax(z2)
+
+# loss
+l = -jnp.log(o)[y]
+</code></pre>
+<p>Our goal is to compute the gradients of the loss with respect to the parameters $W_1$, $b_1$, $W_2$, and $b_2$. 
+To do this, we will work <em>backwards</em>, calculating gradients of the loss with respect to each node in the graph starting with $o$, until we've calculated gradients with respect to each parameter. </p>
+<h3>Step 1: Calculate $\frac{\partial l}{\partial o}$</h3>
+<p>The cross-entropy loss $l$ is the negative log-likelihood corresponding to the true class label $y$. 
+As a function of the output $o$, it is commonly written as 
+$$
+l(o) = - \sum_{i=1}^k \mathbb{1}\{i = y\} \cdot \log o_i.
+$$
+This is a map from $\mathbb{R}^k$ to $\mathbb{R}$, and its gradient, which we'll denote by $\frac{\partial l}{\partial o}$, is equal to
+$$
+\frac{\partial l}{\partial o}
+=
+-
+\begin{pmatrix}
+\mathbb{1}\{1 = y\} \cdot 1/o_1 \\ 
+\vdots \\ 
+\mathbb{1}\{k = y\} \cdot 1/o_k \\
+\end{pmatrix}.
+$$</p>
+<p>In code, we can calculate this as:</p>
+<pre><code>do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
+</code></pre>
+<h3>Step 2: Calculate $\frac{\partial l}{\partial z_2}$</h3>
+<p>The loss as a function of $z_2$ is the composition of $l(o)$ and $o(z_2) = \sigma(z_2)$. Since the gradient of a composition composes in reverse, we can calculate the gradient $\partial l / \partial z_2$ as</p>
+<p>$$
+\frac{\partial l}{\partial z_2} = J_{\sigma}(z_2)^T \cdot \frac{\partial l}{\partial o}.
+$$</p>
+<p>The softmax function $\sigma$ here is a map from $\mathbb{R}^k$ to $\mathbb{R}^k$ with 
+$$
+o_i = \frac{\exp z_{2,i}}{\sum_j \exp z_{2,j}}
+$$</p>
+<p>and</p>
+<p>$$
+\frac{\partial o_i}{\partial z_{2,j}}
+=
+\begin{cases}
+\sigma(z_2)_i (1 - \sigma(z_2)_i), &amp; i = j \\ 
+- \sigma(z_2)_i \sigma(z_2)_j, &amp; i \neq j \\
+\end{cases}
+$$</p>
+<p>so the Jacobian is given by </p>
+<p>$$
+J_{\sigma}(z_2) 
+= 
+\begin{bmatrix}
+\sigma(z_2)_1 (1 - \sigma(z_2)_1) &amp; \cdots &amp; -\sigma(z_2)_1 \sigma(z_2)_k \\
+\vdots &amp; \ddots &amp; \vdots \\
+-\sigma(z_2)_k \sigma(z_2)_1 &amp; \cdots &amp; \sigma(z_2)_k (1 - \sigma(z_2)_k) \\
+\end{bmatrix}.
+$$</p>
+<p>In code, we can compute $\frac{\partial l}{\partial z_2}$ via</p>
+<pre><code>dz2 = (jnp.diag(softmax(z2)) - jnp.outer(softmax(z2), softmax(z2))).T @ do
+</code></pre>
+<h3>Step 3: Calculate $\frac{\partial l}{\partial W_2}$</h3>
+<p>Using identity (\ref{lineareq}), we have:
+$$
+\frac{\partial l}{\partial W_2} = \frac{\partial l}{\partial z_2} \cdot a_1^T.
+$$</p>
+<p>In code:</p>
+<pre><code>dW2 = jnp.outer(dz2, a1)
+</code></pre>
+<h3>Step 4: Calculate $\frac{\partial l}{\partial b_2}$</h3>
+<p>The Jacobian $J_{z_2}(b_2)$ is the identity, so </p>
+<p>$$
+\frac{\partial l}{\partial b_2} = J_{z_2}(b_2)^T \cdot \frac{\partial l}{\partial z_2} = \frac{\partial l}{\partial z_2}.
+$$</p>
+<p>In code: </p>
+<pre><code>dB2 = dz2
+</code></pre>
+<h3>Step 5: Calculate $\frac{\partial l}{\partial a_1}$</h3>
+<p>The Jacobian $J_{z_2}(a_1)$ is equal to $W_2$, so</p>
+<p>$$
+\frac{\partial l}{\partial a_1} = J_{z_2}(a_1)^T \cdot \frac{\partial l}{\partial z_2} = W_2^T \cdot \frac{\partial l}{\partial z_2}.
+$$</p>
+<p>In code:</p>
+<pre><code>da1 = W2.T @ dz2
+</code></pre>
+<h3>Step 6: Calculate $\frac{\partial l}{\partial z_1}$</h3>
+<p>$a_1(z_1) = \phi \circ z_1$, where $\phi:\mathbb{R} \to \mathbb{R}$ is the ReLU function given by $\phi(t) = \text{max}(0, t)$.
+Recall that the notation $\phi \circ z_1$ refers to element-wise application of $\phi$ to each entry of $z_1$.
+As discussed above, we have that
+$$
+\frac{\partial l}{\partial z_1} =  J_{a_1}(z_1) \cdot \frac{\partial l}{\partial a_1} = \text{diag}(\phi' \circ z_1) \cdot \frac{\partial l}{\partial a_1}
+$$</p>
+<p>where $\phi'(t) = 1$ if $t &gt; 0$ and $\phi'(t) = 0$ if $t &lt; 0$.</p>
+<p>In code, this is:</p>
+<pre><code>dz1 = (z1 &gt; 0).astype(jnp.int16) * da1
+</code></pre>
+<p>If any entries of $z_1$ are zero, we just get a sub-gradient with respect to $z_1$. </p>
+<h3>Step 7: Calculate $\frac{\partial l}{\partial W_1}$</h3>
+<p>As in $W_2$, we use identity (\ref{lineareq}) to get </p>
+<p>$$
+\frac{\partial l}{\partial W_1} = \frac{\partial l}{\partial W_1} \cdot x^T.
+$$</p>
+<p>In code:</p>
+<pre><code>dW1 = jnp.outer(dz1, x)
+</code></pre>
+<h3>Step 8: Calculate $\frac{\partial l}{\partial b_1}$</h3>
+<p>As in $b_2$, we have </p>
+<p>$$
+\frac{\partial l}{\partial b_1} = \frac{\partial l}{\partial z_1}.
+$$</p>
+<p>In code:</p>
+<pre><code>dB1 = dz1
+</code></pre>
+<h3>Checking Our Work</h3>
+<p>Together, the gradient calculations look like this:</p>
+<pre><code># dl/do 
+do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
+
+# dl/dz2 = J_o(z2).T * dl/do
+dz2 = (jnp.diag(softmax(z2)) - jnp.outer(softmax(z2), softmax(z2))).T @ do
+
+# dl/dW2 = dl/dz2 * a1.T
+dW2 = jnp.outer(dz2, a1)
+
+# dl/dB2 = dl/dz2
+dB2 = dz2
+
+# dl/da1 = J_z2(a1).T * dl/dz2
+da1 = W2.T @ dz2
+
+# dl/dz1 = diag(drelu(z1)) * dl/da1
+dz1 = (z1 &gt; 0).astype(jnp.int16) * da1
+
+# dl/dW1 = dl/dz1 * x.T 
+dW1 = jnp.outer(dz1, x)
+
+# dl/dB1 = dl/dz1
+dB1 = dz1
+</code></pre>
+<p>To check that this is correct, we can wrap our forward pass in a function and use JAX to compute the gradients.</p>
+<p>Here is the forward pass:</p>
+<pre><code>def compute_loss(params, x, y):
+    W1, B1, W2, B2 = params
+    # Forward pass
+    z1 = W1 @ x + B1
+    a1 = relu(z1)
+    z2 = W2 @ a1 + B2
+    o = softmax(z2)
+    # Compute the loss
+    l = -jnp.log(o)[y]
+    return l
+</code></pre>
+<p>compute the gradients:</p>
+<pre><code>def get_gradients(W1, B1, W2, B2, x, y):
+    params = (W1, B1, W2, B2)
+    grads = grad(compute_loss)(params, x, y)
+    return grads
+
+grad_W1, grad_B1, grad_W2, grad_B2 = get_gradients(W1, B1, W2, B2, x, y)
+</code></pre>
+<p>and we can check that the gradients are the same</p>
+<pre><code>assert jnp.allclose(dW1, grad_W1)
+assert jnp.allclose(dB1, grad_B1)
+assert jnp.allclose(dW2, grad_W2)
+assert jnp.allclose(dB2, grad_B2)
+</code></pre>
+<p>success!</p>
+        </section>
+    </article>
+</body>
+</html>
