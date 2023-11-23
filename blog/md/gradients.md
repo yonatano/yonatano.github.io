@@ -3,6 +3,17 @@ Time: 11/20/2023
 Tags: machine-learning, gradients
 Publish: True
 
+Calculating symbolic expressions for gradients of common loss functions and architectures in statistics and machine learning by hand can often be confusing and error-prone, especially when first learning the subject. 
+
+The purpose of this blog post is to discuss this material with a particular focus on the following questions - 
+
+* How do we define gradients of arbitrary differentiable real-valued functions?
+* Why is it okay to "flatten" the input when computing the gradient of a function with respect to a matrix?
+* How does the Chain Rule apply to the computation of gradients? 
+* How do we propagate gradients back through linear layers and other mappings from matrices to vectors?
+
+Enjoy.
+
 ## The Gradient of a Real-Valued Function of a Matrix
 
 A typical treatment of multivariable calculus defines the gradient of a map $f:\mathbb{R}^n \to \mathbb{R}$ at a point $a$ as the vector of partial derivatives of $f$ at $a$:

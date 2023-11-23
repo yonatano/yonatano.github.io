@@ -48,7 +48,16 @@
             </div>
         </header>
         <section>
-            <h2>The Gradient of a Real-Valued Function of a Matrix</h2>
+            <p>Calculating symbolic expressions for gradients of common loss functions and architectures in statistics and machine learning by hand can often be confusing and error-prone, especially when first learning the subject. </p>
+<p>The purpose of this blog post is to discuss this material with a particular focus on the following questions - </p>
+<ul>
+<li>How do we define gradients of arbitrary differentiable real-valued functions?</li>
+<li>Why is it okay to "flatten" the input when computing the gradient of a function with respect to a matrix?</li>
+<li>How does the Chain Rule apply to the computation of gradients? </li>
+<li>How do we propagate gradients back through linear layers and other mappings from matrices to vectors?</li>
+</ul>
+<p>Enjoy.</p>
+<h2>The Gradient of a Real-Valued Function of a Matrix</h2>
 <p>A typical treatment of multivariable calculus defines the gradient of a map $f:\mathbb{R}^n \to \mathbb{R}$ at a point $a$ as the vector of partial derivatives of $f$ at $a$:</p>
 <p>$$
 \nabla f(a) 
