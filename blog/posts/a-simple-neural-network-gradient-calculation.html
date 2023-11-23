@@ -38,7 +38,7 @@
     <article>
         <header>
             <h1>A Simple Neural Network Gradient Calculation Example </h1>
-            <p><time>11/10/2023</time></p>
+            <p><time>11/20/2023</time></p>
             <div class="tags">
                 
                     <span class="tag">machine-learning</span>
@@ -313,43 +313,45 @@ The label $y$ is an integer in $\{1, \cdots, k\}$.</p>
 </ul>
 <p>Before we start calculating gradients, it's helpful to visualize the functions composing the forward pass in a directed graph, commonly referred to as an execution trace. </p>
 <div style="text-align:center;">
-    <img src="static/gradients-trace.jpg" alt="Execution Trace" style="width:70%; height:auto;" />
+    <img src="../assets/gradients/trace.jpeg" alt="Execution Trace" style="width:70%; height:auto;" />
 </div>
 
 <p>We'll code up the forward pass and gradient calculations in JAX, so we can check our work. </p>
 <p>First define some constants and initialize the parameters:</p>
-<pre><code class="language-python">k = 3  # Number of classes
-d = 3  # Input dim
-h = 5  # Hidden dim
+<div class="language-python"><pre><span></span><code><span class="nv">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span>#<span class="w"> </span><span class="nv">Number</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">classes</span>
+<span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span>#<span class="w"> </span><span class="nv">Input</span><span class="w"> </span><span class="nv">dim</span>
+<span class="nv">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span>#<span class="w"> </span><span class="nv">Hidden</span><span class="w"> </span><span class="nv">dim</span>
 
-x = jnp.ones((h,)) # Input
-y = 2              # Label
+<span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">jnp</span>.<span class="nv">ones</span><span class="ss">((</span><span class="nv">h</span>,<span class="ss">))</span><span class="w"> </span>#<span class="w"> </span><span class="nv">Input</span>
+<span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">              </span>#<span class="w"> </span><span class="nv">Label</span>
 
-# Initialize the network parameters.
-key = random.PRNGKey(0) 
-k1, k2, k3, k4, k5 = random.split(key, 5)
+#<span class="w"> </span><span class="nv">Initialize</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">network</span><span class="w"> </span><span class="nv">parameters</span>.
+<span class="nv">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">PRNGKey</span><span class="ss">(</span><span class="mi">0</span><span class="ss">)</span><span class="w"> </span>
+<span class="nv">k1</span>,<span class="w"> </span><span class="nv">k2</span>,<span class="w"> </span><span class="nv">k3</span>,<span class="w"> </span><span class="nv">k4</span>,<span class="w"> </span><span class="nv">k5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">split</span><span class="ss">(</span><span class="nv">key</span>,<span class="w"> </span><span class="mi">5</span><span class="ss">)</span>
 
-W1 = random.normal(k2, (h, d))
-B1 = random.normal(k3, (h,))
-W2 = random.normal(k4, (k, h))
-B2 = random.normal(k5, (k,))
-</code></pre>
+<span class="nv">W1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">normal</span><span class="ss">(</span><span class="nv">k2</span>,<span class="w"> </span><span class="ss">(</span><span class="nv">h</span>,<span class="w"> </span><span class="nv">d</span><span class="ss">))</span>
+<span class="nv">B1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">normal</span><span class="ss">(</span><span class="nv">k3</span>,<span class="w"> </span><span class="ss">(</span><span class="nv">h</span>,<span class="ss">))</span>
+<span class="nv">W2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">normal</span><span class="ss">(</span><span class="nv">k4</span>,<span class="w"> </span><span class="ss">(</span><span class="nv">k</span>,<span class="w"> </span><span class="nv">h</span><span class="ss">))</span>
+<span class="nv">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">random</span>.<span class="nv">normal</span><span class="ss">(</span><span class="nv">k5</span>,<span class="w"> </span><span class="ss">(</span><span class="nv">k</span>,<span class="ss">))</span>
+</code></pre></div>
+
 <p>Next, let's code up the forward pass:</p>
-<pre><code># linear layer
-z1 = W1 @ x + B1
+<div class="language-python"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="n">layer</span>
+<span class="n">z1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W1</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">B1</span>
 
-# activation
-a1 = relu(z1)
+<span class="err">#</span><span class="w"> </span><span class="n">activation</span>
+<span class="n">a1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">relu</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
 
-# linear layer
-z2 = W2 @ a1 + B2
+<span class="err">#</span><span class="w"> </span><span class="n">linear</span><span class="w"> </span><span class="n">layer</span>
+<span class="n">z2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W2</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">a1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">B2</span>
 
-# output
-o = softmax(z2)
+<span class="err">#</span><span class="w"> </span><span class="k">output</span>
+<span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">softmax</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
 
-# loss
-l = -jnp.log(o)[y]
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="n">loss</span>
+<span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">jnp</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">[</span><span class="n">y</span><span class="o">]</span>
+</code></pre></div>
+
 <p>Our goal is to compute the gradients of the loss with respect to the parameters $W_1$, $b_1$, $W_2$, and $b_2$. 
 To do this, we will work <em>backwards</em>, calculating gradients of the loss with respect to each node in the graph starting with $o$, until we've calculated gradients with respect to each parameter. </p>
 <h3>Step 1: Calculate $\frac{\partial l}{\partial o}$</h3>
@@ -370,8 +372,9 @@ $$
 \end{pmatrix}.
 $$</p>
 <p>In code, we can calculate this as:</p>
-<pre><code>do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
-</code></pre>
+<div class="language-python"><pre><span></span><code>do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
+</code></pre></div>
+
 <h3>Step 2: Calculate $\frac{\partial l}{\partial z_2}$</h3>
 <p>The loss as a function of $z_2$ is the composition of $l(o)$ and $o(z_2) = \sigma(z_2)$. Since the gradient of a composition composes in reverse, we can calculate the gradient $\partial l / \partial z_2$ as</p>
 <p>$$
@@ -401,32 +404,36 @@ J_{\sigma}(z_2)
 \end{bmatrix}.
 $$</p>
 <p>In code, we can compute $\frac{\partial l}{\partial z_2}$ via</p>
-<pre><code>dz2 = (jnp.diag(softmax(z2)) - jnp.outer(softmax(z2), softmax(z2))).T @ do
-</code></pre>
+<div class="language-python"><pre><span></span><code><span class="nv">dz2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">(</span><span class="nv">jnp</span>.<span class="nv">diag</span><span class="ss">(</span><span class="nv">softmax</span><span class="ss">(</span><span class="nv">z2</span><span class="ss">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">jnp</span>.<span class="nv">outer</span><span class="ss">(</span><span class="nv">softmax</span><span class="ss">(</span><span class="nv">z2</span><span class="ss">)</span>,<span class="w"> </span><span class="nv">softmax</span><span class="ss">(</span><span class="nv">z2</span><span class="ss">)))</span>.<span class="nv">T</span><span class="w"> </span>@<span class="w"> </span><span class="k">do</span>
+</code></pre></div>
+
 <h3>Step 3: Calculate $\frac{\partial l}{\partial W_2}$</h3>
 <p>Using identity (\ref{lineareq}), we have:
 $$
 \frac{\partial l}{\partial W_2} = \frac{\partial l}{\partial z_2} \cdot a_1^T.
 $$</p>
 <p>In code:</p>
-<pre><code>dW2 = jnp.outer(dz2, a1)
-</code></pre>
+<div class="language-python"><pre><span></span><code>dW2 = jnp.outer(dz2, a1)
+</code></pre></div>
+
 <h3>Step 4: Calculate $\frac{\partial l}{\partial b_2}$</h3>
 <p>The Jacobian $J_{z_2}(b_2)$ is the identity, so </p>
 <p>$$
 \frac{\partial l}{\partial b_2} = J_{z_2}(b_2)^T \cdot \frac{\partial l}{\partial z_2} = \frac{\partial l}{\partial z_2}.
 $$</p>
 <p>In code: </p>
-<pre><code>dB2 = dz2
-</code></pre>
+<div class="language-python"><pre><span></span><code>dB2 = dz2
+</code></pre></div>
+
 <h3>Step 5: Calculate $\frac{\partial l}{\partial a_1}$</h3>
 <p>The Jacobian $J_{z_2}(a_1)$ is equal to $W_2$, so</p>
 <p>$$
 \frac{\partial l}{\partial a_1} = J_{z_2}(a_1)^T \cdot \frac{\partial l}{\partial z_2} = W_2^T \cdot \frac{\partial l}{\partial z_2}.
 $$</p>
 <p>In code:</p>
-<pre><code>da1 = W2.T @ dz2
-</code></pre>
+<div class="language-python"><pre><span></span><code>da1 = W2.T @ dz2
+</code></pre></div>
+
 <h3>Step 6: Calculate $\frac{\partial l}{\partial z_1}$</h3>
 <p>$a_1(z_1) = \phi \circ z_1$, where $\phi:\mathbb{R} \to \mathbb{R}$ is the ReLU function given by $\phi(t) = \text{max}(0, t)$.
 Recall that the notation $\phi \circ z_1$ refers to element-wise application of $\phi$ to each entry of $z_1$.
@@ -436,8 +443,9 @@ $$
 $$</p>
 <p>where $\phi'(t) = 1$ if $t &gt; 0$ and $\phi'(t) = 0$ if $t &lt; 0$.</p>
 <p>In code, this is:</p>
-<pre><code>dz1 = (z1 &gt; 0).astype(jnp.int16) * da1
-</code></pre>
+<div class="language-python"><pre><span></span><code><span class="nx">dz1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nx">z1</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="nx">jnp</span><span class="p">.</span><span class="nx">int16</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">da1</span>
+</code></pre></div>
+
 <p>If any entries of $z_1$ are zero, we just get a sub-gradient with respect to $z_1$. </p>
 <h3>Step 7: Calculate $\frac{\partial l}{\partial W_1}$</h3>
 <p>As in $W_2$, we use identity (\ref{lineareq}) to get </p>
@@ -445,69 +453,75 @@ $$</p>
 \frac{\partial l}{\partial W_1} = \frac{\partial l}{\partial W_1} \cdot x^T.
 $$</p>
 <p>In code:</p>
-<pre><code>dW1 = jnp.outer(dz1, x)
-</code></pre>
+<div class="language-python"><pre><span></span><code>dW1 = jnp.outer(dz1, x)
+</code></pre></div>
+
 <h3>Step 8: Calculate $\frac{\partial l}{\partial b_1}$</h3>
 <p>As in $b_2$, we have </p>
 <p>$$
 \frac{\partial l}{\partial b_1} = \frac{\partial l}{\partial z_1}.
 $$</p>
 <p>In code:</p>
-<pre><code>dB1 = dz1
-</code></pre>
+<div class="language-python"><pre><span></span><code>dB1 = dz1
+</code></pre></div>
+
 <h3>Checking Our Work</h3>
 <p>Together, the gradient calculations look like this:</p>
-<pre><code># dl/do 
-do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
+<div class="language-python"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">do</span><span class="w"> </span>
+<span class="nx">do</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="nx">jnp</span><span class="p">.</span><span class="nx">asarray</span><span class="p">([</span><span class="mi">1</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nx">jnp</span><span class="p">.</span><span class="nx">arange</span><span class="p">(</span><span class="nx">k</span><span class="p">)])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">o</span>
 
-# dl/dz2 = J_o(z2).T * dl/do
-dz2 = (jnp.diag(softmax(z2)) - jnp.outer(softmax(z2), softmax(z2))).T @ do
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">J_o</span><span class="p">(</span><span class="nx">z2</span><span class="p">).</span><span class="nx">T</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">do</span>
+<span class="nx">dz2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nx">jnp</span><span class="p">.</span><span class="nx">diag</span><span class="p">(</span><span class="nx">softmax</span><span class="p">(</span><span class="nx">z2</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">jnp</span><span class="p">.</span><span class="nx">outer</span><span class="p">(</span><span class="nx">softmax</span><span class="p">(</span><span class="nx">z2</span><span class="p">),</span><span class="w"> </span><span class="nx">softmax</span><span class="p">(</span><span class="nx">z2</span><span class="p">))).</span><span class="nx">T</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="nx">do</span>
 
-# dl/dW2 = dl/dz2 * a1.T
-dW2 = jnp.outer(dz2, a1)
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dW2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">a1</span><span class="p">.</span><span class="nx">T</span>
+<span class="nx">dW2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">jnp</span><span class="p">.</span><span class="nx">outer</span><span class="p">(</span><span class="nx">dz2</span><span class="p">,</span><span class="w"> </span><span class="nx">a1</span><span class="p">)</span>
 
-# dl/dB2 = dl/dz2
-dB2 = dz2
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dB2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz2</span>
+<span class="nx">dB2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dz2</span>
 
-# dl/da1 = J_z2(a1).T * dl/dz2
-da1 = W2.T @ dz2
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">da1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">J_z2</span><span class="p">(</span><span class="nx">a1</span><span class="p">).</span><span class="nx">T</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz2</span>
+<span class="nx">da1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">W2</span><span class="p">.</span><span class="nx">T</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="nx">dz2</span>
 
-# dl/dz1 = diag(drelu(z1)) * dl/da1
-dz1 = (z1 &gt; 0).astype(jnp.int16) * da1
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">diag</span><span class="p">(</span><span class="nx">drelu</span><span class="p">(</span><span class="nx">z1</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">da1</span>
+<span class="nx">dz1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nx">z1</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="nx">jnp</span><span class="p">.</span><span class="nx">int16</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">da1</span>
 
-# dl/dW1 = dl/dz1 * x.T 
-dW1 = jnp.outer(dz1, x)
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dW1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">T</span><span class="w"> </span>
+<span class="nx">dW1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">jnp</span><span class="p">.</span><span class="nx">outer</span><span class="p">(</span><span class="nx">dz1</span><span class="p">,</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span>
 
-# dl/dB1 = dl/dz1
-dB1 = dz1
-</code></pre>
+<span class="err">#</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dB1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dl</span><span class="o">/</span><span class="nx">dz1</span>
+<span class="nx">dB1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">dz1</span>
+</code></pre></div>
+
 <p>To check that this is correct, we can wrap our forward pass in a function and use JAX to compute the gradients.</p>
 <p>Here is the forward pass:</p>
-<pre><code>def compute_loss(params, x, y):
-    W1, B1, W2, B2 = params
-    # Forward pass
-    z1 = W1 @ x + B1
-    a1 = relu(z1)
-    z2 = W2 @ a1 + B2
-    o = softmax(z2)
-    # Compute the loss
-    l = -jnp.log(o)[y]
-    return l
-</code></pre>
+<div class="language-python"><pre><span></span><code><span class="n">def</span><span class="w"> </span><span class="n">compute_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="err">:</span>
+<span class="w">    </span><span class="n">W1</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="n">W2</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">params</span>
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">Forward</span><span class="w"> </span><span class="n">pass</span>
+<span class="w">    </span><span class="n">z1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W1</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">B1</span>
+<span class="w">    </span><span class="n">a1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">relu</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
+<span class="w">    </span><span class="n">z2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W2</span><span class="w"> </span><span class="err">@</span><span class="w"> </span><span class="n">a1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">B2</span>
+<span class="w">    </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">softmax</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
+<span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">Compute</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">loss</span>
+<span class="w">    </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">jnp</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">[</span><span class="n">y</span><span class="o">]</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l</span>
+</code></pre></div>
+
 <p>compute the gradients:</p>
-<pre><code>def get_gradients(W1, B1, W2, B2, x, y):
+<div class="language-python"><pre><span></span><code>def get_gradients(W1, B1, W2, B2, x, y):
     params = (W1, B1, W2, B2)
     grads = grad(compute_loss)(params, x, y)
     return grads
 
 grad_W1, grad_B1, grad_W2, grad_B2 = get_gradients(W1, B1, W2, B2, x, y)
-</code></pre>
+</code></pre></div>
+
 <p>and we can check that the gradients are the same</p>
-<pre><code>assert jnp.allclose(dW1, grad_W1)
+<div class="language-python"><pre><span></span><code>assert jnp.allclose(dW1, grad_W1)
 assert jnp.allclose(dB1, grad_B1)
 assert jnp.allclose(dW2, grad_W2)
 assert jnp.allclose(dB2, grad_B2)
-</code></pre>
+</code></pre></div>
+
 <p>success!</p>
         </section>
     </article>

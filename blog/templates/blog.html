@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0 auto;
+            padding: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: center; /* Centers container horizontally */
+            min-height: 100vh; /* Full viewport height */
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0; /* Remove default margin to prevent offset */
+        }
+        li {
+            background-color: #f9f9f9;
+            margin-bottom: 1em;
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: left; /* Text inside each li is left-aligned */
+        }
+        h3 {
+            font-size: 20px;
+        }
+        h3 a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        h3 a:hover {
+            color: #0078d7;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #0078d7;
+            color: #fff;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.75em;
+        }
+        .post-title {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+        .post-date {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+    </style>
+    <title>Blog Posts</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Work Log</h1>
+        <p>
+            This page is a daily log of my learning in math and computer science, a personal experiment in understanding and expressing technical ideas simply. 
+            Posts are brief and candid snapshots of study in progress, valuing consistency and genuine reflection over polish.
+        </p>
+        <p><b>Days since last post:</b> {{ days_since_last_post }}</p>
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <h3 class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+                    <p class="post-date"><small>{{ post.time }}</small></p>
+                    <p>{{ post.preview }} ... <a href="{{ post.url }}">(see more)</a></p>
+                    <div class="tags">
+                        {% for tag in post.tags.split(',') %}
+                            <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

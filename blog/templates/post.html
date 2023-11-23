@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+    <title>{{ title }}</title>
+    <script>
+        window.MathJax = {
+          loader: {load: ['[tex]/cases']},
+          tex: {
+            inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+            packages: {'[+]': ['cases']},
+            tags: 'ams'
+          }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        h1 {
+            font-size: 32px;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #0078d7;
+            color: #fff;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.75em;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <header>
+            <h1>{{ title }}</h1>
+            <p><time>{{ time }}</time></p>
+            <div class="tags">
+                {% for tag in tags.split(',') %}
+                    <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </header>
+        <section>
+            {{ content | safe }}
+        </section>
+    </article>
+</body>
+</html>
