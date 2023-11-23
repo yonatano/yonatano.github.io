@@ -3,7 +3,7 @@ Time: 11/20/2023
 Tags: machine-learning, gradients
 Publish: True
 
-Calculating symbolic expressions for gradients of common loss functions and architectures in statistics and machine learning by hand can often be confusing and error-prone, especially when first learning the subject. 
+Calculating symbolic expressions for gradients of common loss functions and architectures in deep learning by hand can often be confusing and error-prone, especially when first learning the subject. 
 
 The purpose of this blog post is to discuss this material with a particular focus on the following questions - 
 
