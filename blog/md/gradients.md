@@ -82,7 +82,7 @@ Let's show that $\nabla f (X)$ is the matrix of partial derivatives of $f$ with 
 Formally, we can consider the flattening map $\Phi:\text{Mat}(m, n) \to \mathbb{R}^{mn}$, which flattens an $m \times n$ matrix into a vector in row-major order. The map $\Phi$ is called an *isometry*, because it preserves inner products:
 
 $$
-\langle A, B {\rangle}_M = AB^T = \Phi(A)^T \Phi(B) = \langle \Phi(A), \Phi(B) \rangle.
+\langle A, B {\rangle}_M = \text{Tr}(AB^T) = \Phi(A)^T \Phi(B) = \langle \Phi(A), \Phi(B) \rangle.
 $$
 
 This says that the inner product of two matrices $A$ and $B$ in $\text{Mat}(m, n)$ is equal to the dot product of the flattened matrices $\Phi(A)$ and $\Phi(B)$. This is easy to see once you realize that $AB^T$ is just the sum of the products of the corresponding entries of $A$ and $B$. 
