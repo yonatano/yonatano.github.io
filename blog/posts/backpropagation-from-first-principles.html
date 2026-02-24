@@ -215,6 +215,40 @@
             overflow-y: hidden;
         }
 
+        /* ── Table of contents ── */
+        .toc-wrap {
+            margin-bottom: 2.25rem;
+            padding: 0.9rem 1.2rem;
+            background: #f8f9fa;
+            border-left: 3px solid #2563eb;
+            border-radius: 4px;
+        }
+        .toc-title {
+            margin: 0 0 0.4rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #6e7681;
+        }
+        .toc-wrap .toc { margin: 0; }
+        .toc-wrap .toc ul {
+            margin: 0;
+            padding-left: 1rem;
+            list-style: none;
+        }
+        .toc-wrap .toc > ul { padding-left: 0; }
+        .toc-wrap .toc li { margin-bottom: 0.15rem; line-height: 1.5; }
+        .toc-wrap .toc a {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        .toc-wrap .toc a:hover { text-decoration: underline; }
+
         /* ── Images ── */
         article section img {
             max-width: 100%;
@@ -241,6 +275,21 @@
                     
                 </div>
             </header>
+            
+            <div class="toc-wrap">
+                <p class="toc-title">Contents</p>
+                <div class="toc">
+<ul>
+<li><a href="#the-gradient-of-a-real-valued-function-of-a-matrix">The Gradient of a Real-Valued Function of a Matrix</a></li>
+<li><a href="#the-gradient-of-a-composition-composes-in-reverse">The Gradient of a Composition Composes in Reverse</a></li>
+<li><a href="#the-linear-layer">The Linear Layer</a></li>
+<li><a href="#the-element-wise-activation">The Element-wise Activation</a></li>
+<li><a href="#an-example">An Example</a></li>
+</ul>
+</div>
+
+            </div>
+            
             <section>
                 <p>Calculating symbolic expressions for gradients of common loss functions and architectures in deep learning by hand can often be confusing and error-prone, especially when first learning the subject. </p>
 <p>The purpose of this blog post is to discuss this material with a particular focus on the following questions - </p>
@@ -251,7 +300,7 @@
 <li>How do we propagate gradients back through linear layers and other mappings from matrices to vectors?</li>
 </ul>
 <p>Enjoy.</p>
-<h2>The Gradient of a Real-Valued Function of a Matrix</h2>
+<h2 id="the-gradient-of-a-real-valued-function-of-a-matrix">The Gradient of a Real-Valued Function of a Matrix</h2>
 <p>A typical treatment of multivariable calculus defines the gradient of a map $f:\mathbb{R}^n \to \mathbb{R}$ at a point $a$ as the vector of partial derivatives of $f$ at $a$:</p>
 <p>$$
 \nabla f(a) 
@@ -265,7 +314,7 @@ $$</p>
 <p>The gradient is useful because it gives the direction of steepest increase for a local, linear approximation to $f$. </p>
 <p>How do we define the gradient of $f$ if its input is a $m \times n$ matrix $A$? Our intuition might be to think of the matrix $A$ as a long vector; compute the partial derivatives of $f$ with respect to each entry in $A$, and organize the partial derivatives into a matrix of the same shape.</p>
 <p>This intuition is correct, but let's see how we can prove this formally. We'll start by discussing how gradients are defined in arbitrary inner product spaces. </p>
-<h3>Gradients in general</h3>
+<h3 id="gradients-in-general">Gradients in general</h3>
 <p>Suppose that $f$ is a mapping from an inner product space $V$ to $\mathbb{R}$. We'll denote the inner product on $V$ by $\langle \cdot, \cdot {\rangle}_V$. Recall that the derivative of $f$ at a point $v$ (if it exists) is a linear map from $V$ to $\mathbb{R}$, which we'll denote by $D f(v)$, which gives the best linear approximation to the change in $f$ near $v$:</p>
 <p>$$f(v + h) - f(v) = D f(v) h + o(h)$$</p>
 <p>as $h \to 0$. </p>
@@ -288,7 +337,7 @@ $$ |\langle h, g {\rangle}_V| \leq ||h||_V\ \cdot ||g||_V $$
 and says that the inner product is maximized when the vectors point in the same direction. 
 In other words, the direction $h$ which increases $f$ the fastest is a (positive) scalar multiple of $g$.
 Indeed, $g$ is the gradient of $f$ at $v$, and equation (\ref{ipgrad}) is how we define the gradient for real-valued functions on arbitrary inner product spaces.</p>
-<h3>Gradients of matrix functions</h3>
+<h3 id="gradients-of-matrix-functions">Gradients of matrix functions</h3>
 <p>Let's now return to the case of a real-valued function $f$ of a matrix $X$. Suppose that $f$ is a real-valued function on the vector space of $m \times n$ matrices, $\text{Mat}(m, n)$. 
 The standard inner product on this vector space is given by 
 $$
@@ -356,7 +405,7 @@ $$
 \nabla f(X) = \Phi^{-1}(\nabla \tilde f (x))
 $$</p>
 <p>This flattening procedure is fairly self-evident, and the amount of insight gained from a proof is questionable, but at least now we can proceed with the confidence that our procedure is mathematically sound. </p>
-<h2>The Gradient of a Composition Composes in Reverse</h2>
+<h2 id="the-gradient-of-a-composition-composes-in-reverse">The Gradient of a Composition Composes in Reverse</h2>
 <p>The Chain Rule says that the derivative of a composition is the composition of the derivatives:
 $$D f \circ g (x) = Df(g(x)) \circ Dg(x)$$
 but what about the <em>gradient</em> of a composition?</p>
@@ -375,7 +424,7 @@ $$
 $$</p>
 <p>The gradient of a composition is the product of the (transposed) Jacobians in <em>reverse</em> order, hence the mnemonic: <em>the gradient of a composition composes in reverse</em>.</p>
 <p>In the next section, we'll see how the two ideas above help us compute gradients of linear layers, which are ubiquitious in deep learning. </p>
-<h2>The Linear Layer</h2>
+<h2 id="the-linear-layer">The Linear Layer</h2>
 <p>A linear layer takes a $d$-dimensional input and applies the transformation $x \mapsto Wx + b$, where $W \in \text{Mat}(h, d)$ are the weights and $b \in \mathbb{R}^h$ is the bias.
 If we view its output as a function of the parameter $W$, then the output is a vector-valued function of a matrix, which we'll denote by $f:\text{Mat}(h, d) \to \mathbb{R}^h$. </p>
 <p>How do we compute the derivative of $f$? Recall that the derivative of $f$ is the best linear approximation to the difference $f(W + H) - f(W)$. Since
@@ -465,7 +514,7 @@ $$
 \end{equation}
 $$</p>
 <p>Our approach of flattening the independent variable to calculate a Jacobian will <em>always</em> work, but oftentimes we can leverage a simpler identity to get the same result with significantly less computational work, as is the case here. For example, the first linear layer in an MLP of a Transformer Block in GPT-2 has $d = 768$ and $h = 4 \cdot 768$, so the Jacobian of that layer alone will have $d \cdot h \cdot h = 4^2 \cdot (768)^3 \approx 7.24 \times 10^9$ entries! </p>
-<h2>The Element-wise Activation</h2>
+<h2 id="the-element-wise-activation">The Element-wise Activation</h2>
 <p>Activation functions are applied element-wise.
 Let's denote by $f \circ x$ the element-wise application of $f:\mathbb{R} \to \mathbb{R}$ to the vector $x$, and denote by $f \circ$ the mapping $x \mapsto f \circ x$.</p>
 <p>How can we calculate the Jacobian matrix of $f \circ$?
@@ -488,7 +537,7 @@ f'(x_1)   &amp;         &amp; \\
 = 
 \text{diag}(f' \circ x).
 $$</p>
-<h2>An Example</h2>
+<h2 id="an-example">An Example</h2>
 <p>Consider a two-layer neural network with ReLU activation used for a classification task with $k$ classes, with $d$-dimensional input and hidden dimension $h$. 
 The label $y$ is an integer in $\{1, \cdots, k\}$.</p>
 <p>We can describe the forward pass symbolically as follows:</p>
@@ -557,7 +606,7 @@ l = -jnp.log(o)[y]
 
 <p>Our goal is to compute the gradients of the loss with respect to the parameters $W_1$, $b_1$, $W_2$, and $b_2$. 
 To do this, we will work <em>backwards</em>, calculating gradients of the loss with respect to each node in the graph starting with $o$, until we've calculated gradients with respect to each parameter. </p>
-<h3>Step 1: Calculate $\frac{\partial l}{\partial o}$</h3>
+<h3 id="step-1-calculate-fracpartial-lpartial-o">Step 1: Calculate $\frac{\partial l}{\partial o}$</h3>
 <p>The cross-entropy loss $l$ is the negative log-likelihood corresponding to the true class label $y$. 
 As a function of the output $o$, it is commonly written as 
 $$
@@ -578,7 +627,7 @@ $$</p>
 <pre class="language-python"><code>do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o
 </code></pre>
 
-<h3>Step 2: Calculate $\frac{\partial l}{\partial z_2}$</h3>
+<h3 id="step-2-calculate-fracpartial-lpartial-z_2">Step 2: Calculate $\frac{\partial l}{\partial z_2}$</h3>
 <p>The loss as a function of $z_2$ is the composition of $l(o)$ and $o(z_2) = \sigma(z_2)$. Since the gradient of a composition composes in reverse, we can calculate the gradient $\partial l / \partial z_2$ as</p>
 <p>$$
 \frac{\partial l}{\partial z_2} = J_{\sigma}(z_2)^T \cdot \frac{\partial l}{\partial o}.
@@ -610,7 +659,7 @@ $$</p>
 <pre class="language-python"><code>dz2 = (jnp.diag(softmax(z2)) - jnp.outer(softmax(z2), softmax(z2))).T @ do
 </code></pre>
 
-<h3>Step 3: Calculate $\frac{\partial l}{\partial W_2}$</h3>
+<h3 id="step-3-calculate-fracpartial-lpartial-w_2">Step 3: Calculate $\frac{\partial l}{\partial W_2}$</h3>
 <p>Using identity (\ref{lineareq}), we have:
 $$
 \frac{\partial l}{\partial W_2} = \frac{\partial l}{\partial z_2} \cdot a_1^T.
@@ -619,7 +668,7 @@ $$</p>
 <pre class="language-python"><code>dW2 = jnp.outer(dz2, a1)
 </code></pre>
 
-<h3>Step 4: Calculate $\frac{\partial l}{\partial b_2}$</h3>
+<h3 id="step-4-calculate-fracpartial-lpartial-b_2">Step 4: Calculate $\frac{\partial l}{\partial b_2}$</h3>
 <p>The Jacobian $J_{z_2}(b_2)$ is the identity, so </p>
 <p>$$
 \frac{\partial l}{\partial b_2} = J_{z_2}(b_2)^T \cdot \frac{\partial l}{\partial z_2} = \frac{\partial l}{\partial z_2}.
@@ -628,7 +677,7 @@ $$</p>
 <pre class="language-python"><code>dB2 = dz2
 </code></pre>
 
-<h3>Step 5: Calculate $\frac{\partial l}{\partial a_1}$</h3>
+<h3 id="step-5-calculate-fracpartial-lpartial-a_1">Step 5: Calculate $\frac{\partial l}{\partial a_1}$</h3>
 <p>The Jacobian $J_{z_2}(a_1)$ is equal to $W_2$, so</p>
 <p>$$
 \frac{\partial l}{\partial a_1} = J_{z_2}(a_1)^T \cdot \frac{\partial l}{\partial z_2} = W_2^T \cdot \frac{\partial l}{\partial z_2}.
@@ -637,7 +686,7 @@ $$</p>
 <pre class="language-python"><code>da1 = W2.T @ dz2
 </code></pre>
 
-<h3>Step 6: Calculate $\frac{\partial l}{\partial z_1}$</h3>
+<h3 id="step-6-calculate-fracpartial-lpartial-z_1">Step 6: Calculate $\frac{\partial l}{\partial z_1}$</h3>
 <p>$a_1(z_1) = \phi \circ z_1$, where $\phi:\mathbb{R} \to \mathbb{R}$ is the ReLU function given by $\phi(t) = \text{max}(0, t)$.
 Recall that the notation $\phi \circ z_1$ refers to element-wise application of $\phi$ to each entry of $z_1$.
 As discussed above, we have that
@@ -650,7 +699,7 @@ $$</p>
 </code></pre>
 
 <p>If any entries of $z_1$ are zero, we just get a sub-gradient with respect to $z_1$. </p>
-<h3>Step 7: Calculate $\frac{\partial l}{\partial W_1}$</h3>
+<h3 id="step-7-calculate-fracpartial-lpartial-w_1">Step 7: Calculate $\frac{\partial l}{\partial W_1}$</h3>
 <p>As in $W_2$, we use identity (\ref{lineareq}) to get </p>
 <p>$$
 \frac{\partial l}{\partial W_1} = \frac{\partial l}{\partial W_1} \cdot x^T.
@@ -659,7 +708,7 @@ $$</p>
 <pre class="language-python"><code>dW1 = jnp.outer(dz1, x)
 </code></pre>
 
-<h3>Step 8: Calculate $\frac{\partial l}{\partial b_1}$</h3>
+<h3 id="step-8-calculate-fracpartial-lpartial-b_1">Step 8: Calculate $\frac{\partial l}{\partial b_1}$</h3>
 <p>As in $b_2$, we have </p>
 <p>$$
 \frac{\partial l}{\partial b_1} = \frac{\partial l}{\partial z_1}.
@@ -668,7 +717,7 @@ $$</p>
 <pre class="language-python"><code>dB1 = dz1
 </code></pre>
 
-<h3>Checking Our Work</h3>
+<h3 id="checking-our-work">Checking Our Work</h3>
 <p>Together, the gradient calculations look like this:</p>
 <pre class="language-python"><code># dl/do 
 do = -jnp.asarray([1 if i == y else 0 for i in jnp.arange(k)]) * 1 / o

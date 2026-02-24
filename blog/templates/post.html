@@ -215,6 +215,40 @@
             overflow-y: hidden;
         }
 
+        /* ── Table of contents ── */
+        .toc-wrap {
+            margin-bottom: 2.25rem;
+            padding: 0.9rem 1.2rem;
+            background: #f8f9fa;
+            border-left: 3px solid #2563eb;
+            border-radius: 4px;
+        }
+        .toc-title {
+            margin: 0 0 0.4rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #6e7681;
+        }
+        .toc-wrap .toc { margin: 0; }
+        .toc-wrap .toc ul {
+            margin: 0;
+            padding-left: 1rem;
+            list-style: none;
+        }
+        .toc-wrap .toc > ul { padding-left: 0; }
+        .toc-wrap .toc li { margin-bottom: 0.15rem; line-height: 1.5; }
+        .toc-wrap .toc a {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        .toc-wrap .toc a:hover { text-decoration: underline; }
+
         /* ── Images ── */
         article section img {
             max-width: 100%;
@@ -239,6 +273,12 @@
                     {% endfor %}
                 </div>
             </header>
+            {% if toc %}
+            <div class="toc-wrap">
+                <p class="toc-title">Contents</p>
+                {{ toc | safe }}
+            </div>
+            {% endif %}
             <section>
                 {{ content | safe }}
             </section>

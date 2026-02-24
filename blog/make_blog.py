@@ -77,13 +77,15 @@ def main():
             metadata, content = parse_metadata(markdown_content)
 
         # Convert markdown to HTML
-        html_content = markdown.markdown(content, 
-                                         extensions=['extra', 'codehilite'],
-                                         extension_configs={
-                                             'codehilite': {
-                                                 'css_class': 'language-python'
-                                             }
-                                         })
+        md = markdown.Markdown(
+            extensions=['extra', 'codehilite', 'toc'],
+            extension_configs={
+                'codehilite': {'css_class': 'language-python'},
+                'toc': {'toc_depth': 2}
+            }
+        )
+        html_content = md.convert(content)
+        toc = md.toc  # empty string '' when no headings present
 
         # Generate post HTML file
         post_template = env.get_template('post.html')
@@ -92,7 +94,8 @@ def main():
             time=metadata['time'],
             tags=metadata['tags'],
             content=html_content,
-            stylesheet='style.css'  # Replace with your actual stylesheet path
+            toc=toc,
+            stylesheet='style.css'
         )
 
         post_filename = os.path.join('posts', title_to_filename(metadata['title']))
