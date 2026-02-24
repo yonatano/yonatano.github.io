@@ -1,4 +1,4 @@
-Title: A Simple Neural Network Gradient Calculation Example 
+Title: Backpropagation from First Principles
 Time: 11/20/2023
 Tags: machine-learning, gradients
 Publish: True

@@ -1,99 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="static/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yonatan Oren</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #0d1117;
+      --bg2:    #161b22;
+      --border: #30363d;
+      --text:   #cdd9e5;
+      --muted:  #768390;
+      --blue:   #4d9de0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16.5px;
+      line-height: 1.8;
+      min-height: 100vh;
+      padding: 4rem 1.25rem 6rem;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    main { max-width: 720px; margin: 0 auto; }
+
+    /* Name */
+    .name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Header meta */
+    .meta { margin-top: 0.75rem; }
+    .meta-row { line-height: 1.9; color: var(--muted); }
+
+    /* Section headings */
+    h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Links */
+    .link-row { display: flex; gap: 0.75rem; align-items: center; line-height: 2; }
+    .link-key  { color: var(--muted); min-width: 70px; }
+    .link-sep  { color: var(--border); }
+
+    /* Experience */
+    .exp { margin-bottom: 1.2rem; }
+
+    .exp-header { display: flex; gap: 1.25rem; align-items: baseline; flex-wrap: wrap; }
+    .exp-org    { font-weight: 700; }
+    .exp-date   { color: var(--muted); font-size: 0.88em; }
+
+    .exp-desc {
+      color: var(--muted);
+      font-size: 0.9em;
+      padding-left: 1.25rem;
+      margin-top: 0.1rem;
+    }
+
+    .exp-desc a { color: var(--blue); }
+
+    /* Papers */
+    .paper { margin-bottom: 1.1rem; }
+
+    .paper-title a { color: var(--text); }
+    .paper-title a:hover { color: var(--blue); text-decoration: none; }
+
+    .paper-info {
+      color: var(--muted);
+      font-size: 0.87em;
+      margin-top: 0.05rem;
+    }
+
+    .badge {
+      display: inline;
+      font-size: 0.76em;
+      border: 1px solid var(--blue);
+      color: var(--blue);
+      padding: 0 0.3rem;
+      border-radius: 3px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .badge-dim {
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 2.5rem 1rem 4rem; font-size: 15px; }
+      .name { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
+<main>
 
-  <!-- Intro -->
-  <div id="container">
+  <div class="name">Yonatan Oren</div>
 
-    <!-- <div id="image-section">
-      <img src="your-photo.jpg" alt="Your photo">
-    </div> -->
-
-    <div id="info-section">
-      <h2><strong>Yonatan Oren</strong></h2>
-      <p>
-        <strong>yonatano (at) cs.stanford.edu</strong> 
-      </p>
-      <p>
-        I am a technologist based in the San Francisco Bay Area. I am interested in machine learning, statistics, and large language models.
-      </p>
-      <p>
-        I earned a B.Sc. in Mathematics in 2020 and a M.Sc. in Computer Science in 2023 from 
-        <a href="https://www.stanford.edu/">Stanford University</a>. 
-        <br>
-        <br>
-        At Stanford, I worked with <a href="https://thashim.github.io/">Tatsu Hashimoto</a> on language modeling under distribution shift and retrieval-augmented language models for structured prediction and code generation. 
-        More recently, I have been working on developing statistical methods for studying memorization in large language models. 
-        <br>
-        <br>
-        In graduate school, I served as a teaching assistant for courses in probability and statistics.
-        During undergrad, I helped run <a href="https://www.treehacks.com/">TreeHacks</a>.
-      </p>
-      <p>
-        <a href="https://drive.google.com/file/d/1w3qdF_f4LzBwJ7jJUqW3MaoWt3lelMxo/view?usp=drive_link">[Resume]</a>
-        <a href="https://github.com/yonatano">[Github]</a>
-        <a href="https://www.linkedin.com/in/yonatano/">[LinkedIn]</a>
-      </p>
-    </div>
+  <div class="meta">
+    <div class="meta-row">San Francisco Bay Area</div>
+    <div class="meta-row">yonatano (at) cs.stanford.edu</div>
+    <div class="meta-row"><a href="https://github.com/yonatano">github</a> &middot; <a href="https://www.linkedin.com/in/yonatano/">linkedin</a></div>
   </div>
 
-  <!-- Papers -->
-  <div id="container">
-    <div id="papers-section">
-      <h3>Papers</h3>
-      <ul>
-        <li>
-          <h4 class="paper-title"><a href="https://arxiv.org/abs/2310.17623">Proving Test Set Contamination in Black Box Language Models</a></h4>
-          <p class="co-authors"><strong>Yonatan Oren*</strong>, Nicole Meister*, Niladri Chatterji*, Faisal Ladhak, Tatsunori B. Hashimoto. Arxiv preprint.</p>
-        </li>
-        <li>
-          <h4 class="paper-title"><a href="https://arxiv.org/abs/1909.02060">Distributionally Robust Language Modeling</a></h4>
-          <p class="co-authors"><strong>Yonatan Oren*</strong>, Shiori Sagawa* Tatsunori B. Hashimoto*, Percy Liang. EMNLP 2019.</p>
-        </li>
-        <li>
-          <h4 class="paper-title"><a href="https://arxiv.org/abs/1812.01194">A Retrieve-and-Edit Framework for Predicting Structured Outputs</a></h4>
-          <p class="co-authors">Tatsunori B. Hashimoto, Kelvin Guu, <strong>Yonatan Oren</strong>, Percy Liang. NeurIPS 2018.</p>
-        </li>
-        <li>
-          <h4 class="paper-title"><a href="https://arxiv.org/abs/1709.08878">Generating Sentences by Editing Prototypes</a></h4>
-          <p class="co-authors" style="margin-bottom: 0px">Kelvin Guu*, Tatsunori B. Hashimoto*, <strong>Yonatan Oren</strong>, Percy Liang. ACL 2018.</p>
-        </li>
-      </ul>
+  <h2>About</h2>
+  <p>
+    I'm building AI agents for automated red-teaming at
+    <a href="https://www.armadin.com/">Armadin</a>, working across agentic RL, agent
+    architecture, and model training. I was previously an early member of the research team
+    at <a href="https://www.together.ai/">Together AI</a>.
+  </p>
+  <br>
+  <p>
+    I did my B.Sc. and M.Sc. at <a href="https://www.stanford.edu/">Stanford</a>,
+    researching language modeling under distribution shift and memorization in LLMs.
+  </p>
+
+  <h2>Experience</h2>
+  <div class="exp">
+    <div class="exp-header">
+      <span class="exp-org">Together AI</span>
+      <span class="exp-date">2023&ndash;2024</span>
+    </div>
+    <div class="exp-desc">
+      Pre-training: <a href="https://arxiv.org/abs/2411.12372">RedPajama dataset</a>.
+      Inference &amp; speculative decoding: <a href="https://www.together.ai/blog/adaptive-learning-speculator-system-atlas">blog post</a>.
     </div>
   </div>
-
-  <!-- Projects -->
-  <!-- <div id="container">
-    <div id="projects-section">
-      <h3>Software / Projects</h3>
-      <ul>
-      </ul>
+  <div class="exp">
+    <div class="exp-header">
+      <span class="exp-org">Stanford University</span>
     </div>
-  </div> -->
-
-  <!-- Writing -->
-  <!-- <div id="container">
-    <div id="writing-section">
-      <h3>Writing</h3>
-      <ul>
-      </ul>
-    </div>
-  </div> -->
-
-  <!-- Misc -->
-  <!-- <div id="container">
-    <div id="misc-section" style="margin-bottom: 25px">
-      <h3>Misc</h3>
-    </div>
-  </div> -->
-
+    <div class="exp-desc">B.Sc. Mathematics (2020), M.Sc. Computer Science (2021&ndash;2023).</div>
   </div>
 
+  <h2>Blog</h2>
+  <div class="paper">
+    <div class="paper-title"><a href="/blog/posts/backpropagation-from-first-principles.html">Backpropagation from First Principles</a></div>
+    <div class="paper-info">Nov 2023</div>
+  </div>
+
+  <h2>Papers</h2>
+
+  <div class="paper">
+    <div class="paper-title">
+      <a href="https://arxiv.org/abs/2310.17623">Proving Test Set Contamination in Black Box Language Models</a>
+      <span class="badge">ICLR 2024 best paper runner-up</span>
+    </div>
+    <div class="paper-info"><strong>Oren*</strong>, Meister*, Chatterji*, Ladhak, Hashimoto</div>
+  </div>
+
+  <div class="paper">
+    <div class="paper-title">
+      <a href="https://arxiv.org/abs/2411.12372">RedPajama: an Open Dataset for Training Large Language Models</a>
+      <span class="badge badge-dim">NeurIPS 2024 spotlight</span>
+    </div>
+    <div class="paper-info">Weber, Fu, Anthony, <strong>Oren</strong>, et al.</div>
+  </div>
+
+  <div class="paper">
+    <div class="paper-title"><a href="https://arxiv.org/abs/1909.02060">Distributionally Robust Language Modeling</a></div>
+    <div class="paper-info"><strong>Oren*</strong>, Sagawa*, Hashimoto*, Liang &mdash; EMNLP 2019</div>
+  </div>
+
+  <div class="paper">
+    <div class="paper-title"><a href="https://arxiv.org/abs/1812.01194">A Retrieve-and-Edit Framework for Predicting Structured Outputs</a></div>
+    <div class="paper-info">Hashimoto, Guu, <strong>Oren</strong>, Liang &mdash; NeurIPS 2018</div>
+  </div>
+
+  <div class="paper">
+    <div class="paper-title"><a href="https://arxiv.org/abs/1709.08878">Generating Sentences by Editing Prototypes</a></div>
+    <div class="paper-info">Guu*, Hashimoto*, <strong>Oren</strong>, Liang &mdash; TACL 2018</div>
+  </div>
+
+</main>
 </body>
 </html>

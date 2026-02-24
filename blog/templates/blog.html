@@ -3,90 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+    <title>Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 0 auto;
+            margin: 0;
             padding: 0;
-            background-color: #fff;
+            background: #fff;
+            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* ── Nav bar ── */
+        nav {
+            background: #0d1117;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: #4d9de0;
+            padding: 0.65rem 1.5rem;
             display: flex;
-            justify-content: center; /* Centers container horizontally */
-            min-height: 100vh; /* Full viewport height */
+            justify-content: space-between;
+            align-items: center;
         }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 1em;
-            margin-bottom: 1em;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0; /* Remove default margin to prevent offset */
-        }
-        li {
-            background-color: #f9f9f9;
-            margin-bottom: 1em;
-            padding: 1em;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: left; /* Text inside each li is left-aligned */
-        }
-        h3 {
-            font-size: 20px;
-        }
-        h3 a {
-            color: #333;
+        nav a {
+            color: #4d9de0;
             text-decoration: none;
-            transition: color 0.3s ease;
         }
-        h3 a:hover {
-            color: #0078d7;
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Container ── */
+        .wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 5rem;
+        }
+
+        .wrap > h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 0 0.4rem;
+            color: #0d1117;
+        }
+
+        .wrap > p.description {
+            color: #555;
+            margin: 0 0 2rem;
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+
+        /* ── Post list ── */
+        .post-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .post-row:first-of-type {
+            border-top: 1px solid #e5e5e5;
+        }
+        .post-row a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 0.97rem;
+            font-weight: 500;
+        }
+        .post-row a:hover {
+            color: #2563eb;
+        }
+        .post-date {
+            color: #888;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ── Tags ── */
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
         }
         .tag {
             display: inline-block;
-            background-color: #0078d7;
-            color: #fff;
-            padding: 2px 6px;
-            margin: 2px;
+            border: 1px solid #ccc;
+            color: #666;
+            padding: 1px 6px;
             border-radius: 4px;
-            font-size: 0.75em;
+            font-size: 0.72rem;
         }
-        .post-title {
-            margin-top: 0px;
-            margin-bottom: 0px;
-        }
-        .post-date {
-            margin-top: 0px;
-            margin-bottom: 0px;
+
+        /* ── Footer note ── */
+        .footer-note {
+            margin-top: 2.5rem;
+            color: #999;
+            font-size: 0.82rem;
         }
     </style>
-    <title>Blog Posts</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Work Log</h1>
-        <p>
-            This page is a daily log of my learning in math and computer science, a personal experiment in understanding and expressing technical ideas simply. 
-            Posts are brief and candid snapshots of study in progress, valuing consistency and genuine reflection over polish.
+    <nav>
+        <span class="nav-left"><a href="/">~/home</a> / <a href="/blog/">blog</a></span>
+        <span class="nav-right"><a href="/">← home</a></span>
+    </nav>
+    <div class="wrap">
+        <h1>Blog</h1>
+        <p class="description">
+            A log of my learning in math and computer science — candid snapshots of study in progress.
         </p>
-        <p><b>Days since last post:</b> {{ days_since_last_post }}</p>
-        <ul>
-            {% for post in posts %}
-                <li>
-                    <h3 class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
-                    <p class="post-date"><small>{{ post.time }}</small></p>
-                    <p>{{ post.preview }} ... <a href="{{ post.url }}">(see more)</a></p>
-                    <div class="tags">
-                        {% for tag in post.tags.split(',') %}
-                            <span class="tag">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+        {% for post in posts %}
+        <div class="post-row">
+            <div>
+                <a href="{{ post.url }}">{{ post.title }}</a>
+                <div class="post-tags">
+                    {% for tag in post.tags.split(',') %}
+                        <span class="tag">{{ tag.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <span class="post-date">{{ post.time }}</span>
+        </div>
+        {% endfor %}
+        <p class="footer-note">Last post: {{ days_since_last_post }} days ago</p>
     </div>
 </body>
 </html>

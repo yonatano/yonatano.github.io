@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
     <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
         window.MathJax = {
           loader: {load: ['[tex]/cases']},
@@ -20,34 +21,228 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        h1 {
-            font-size: 32px;
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            color: #1a1a1a;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        /* ── Nav bar ── */
+        nav {
+            background: #0d1117;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: #4d9de0;
+            padding: 0.65rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            color: #4d9de0;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Post container ── */
+        .post-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 5rem;
+        }
+
+        /* ── Header ── */
+        article header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 1.25rem;
+        }
+        article header h1 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0 0 0.5rem;
+            color: #0d1117;
+        }
+        .post-meta {
+            margin: 0 0 0.75rem;
+            color: #6e7681;
+            font-size: 0.88rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* ── Tags ── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.5rem;
         }
         .tag {
             display: inline-block;
-            background-color: #0078d7;
-            color: #fff;
-            padding: 2px 6px;
-            margin: 2px;
+            border: 1px solid #ccc;
+            color: #555;
+            padding: 1px 7px;
             border-radius: 4px;
-            font-size: 0.75em;
+            font-size: 0.75rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* ── Body typography ── */
+        article section h1,
+        article section h2,
+        article section h3,
+        article section h4 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #0d1117;
+            line-height: 1.3;
+        }
+        article section h1 { font-size: 1.8rem; margin: 2.5rem 0 1rem; }
+        article section h2 { font-size: 1.35rem; margin: 2.2rem 0 0.8rem; }
+        article section h3 { font-size: 1.1rem; margin: 1.8rem 0 0.6rem; }
+        article section h4 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+
+        article section p { margin: 0 0 1.3rem; }
+        article section ul,
+        article section ol { margin: 0 0 1.3rem 1.5rem; }
+        article section li { margin-bottom: 0.4rem; }
+
+        a { color: #2563eb; }
+        a:hover { color: #1d4ed8; }
+
+        blockquote {
+            margin: 1.5rem 0;
+            padding: 0.5rem 1.25rem;
+            border-left: 3px solid #ccc;
+            color: #555;
+            font-style: italic;
+        }
+        blockquote p:last-child { margin-bottom: 0; }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e5e5e5;
+            margin: 2.5rem 0;
+        }
+
+        /* ── Inline code ── */
+        code {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.85em;
+            background: #f0f0f0;
+            padding: 0.15em 0.4em;
+            border-radius: 3px;
+        }
+
+        /* ── Code blocks ── */
+        pre,
+        .codehilite pre {
+            background: #0d1117 !important;
+            color: #cdd9e5;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: inherit;
+            color: inherit;
+            border-radius: 0;
+        }
+
+        /* ── Pygments dark overrides ── */
+        .codehilite .hll { background-color: #1f2937; }
+        .codehilite .c,
+        .codehilite .cm,
+        .codehilite .c1,
+        .codehilite .cs  { color: #768390; font-style: italic; }  /* comments — muted gray */
+        .codehilite .k,
+        .codehilite .kd,
+        .codehilite .kn,
+        .codehilite .kp,
+        .codehilite .kr,
+        .codehilite .kt  { color: #f47067; }                       /* keywords — coral/red */
+        .codehilite .n,
+        .codehilite .na,
+        .codehilite .nb,
+        .codehilite .nc,
+        .codehilite .nd,
+        .codehilite .ni,
+        .codehilite .ne,
+        .codehilite .nf,
+        .codehilite .nl,
+        .codehilite .nn,
+        .codehilite .nt,
+        .codehilite .nv   { color: #cdd9e5; }                      /* names — light */
+        .codehilite .o,
+        .codehilite .ow   { color: #f47067; }                      /* operators */
+        .codehilite .s,
+        .codehilite .s1,
+        .codehilite .s2,
+        .codehilite .sb,
+        .codehilite .sc,
+        .codehilite .sd,
+        .codehilite .se,
+        .codehilite .sh,
+        .codehilite .si,
+        .codehilite .sx,
+        .codehilite .sr,
+        .codehilite .ss   { color: #96d0ff; }                      /* strings — light blue */
+        .codehilite .mi,
+        .codehilite .mf,
+        .codehilite .mh,
+        .codehilite .mo   { color: #6bc46d; }                      /* numbers — green */
+        .codehilite .err  { color: #f47067; background: none; }
+        .codehilite .p    { color: #cdd9e5; }
+
+        /* ── MathJax ── */
+        .MathJax_Display {
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* ── Images ── */
+        article section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <article>
-        <header>
-            <h1>{{ title }}</h1>
-            <p><time>{{ time }}</time></p>
-            <div class="tags">
-                {% for tag in tags.split(',') %}
-                    <span class="tag">{{ tag }}</span>
-                {% endfor %}
-            </div>
-        </header>
-        <section>
-            {{ content | safe }}
-        </section>
-    </article>
+    <nav>
+        <span class="nav-left"><a href="/">~/home</a> / <a href="/blog/">blog</a></span>
+        <span class="nav-right"><a href="/">← home</a></span>
+    </nav>
+    <div class="post-wrap">
+        <article>
+            <header>
+                <h1>{{ title }}</h1>
+                <p class="post-meta"><time>{{ time }}</time></p>
+                <div class="tags">
+                    {% for tag in tags.split(',') %}
+                        <span class="tag">{{ tag.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </header>
+            <section>
+                {{ content | safe }}
+            </section>
+        </article>
+    </div>
 </body>
 </html>
